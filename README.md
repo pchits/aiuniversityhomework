@@ -1,2 +1,2 @@
 # aiuniversityhomework
-Pulsar prediction with different ML algorithms in Jupyter Notebook
+Pulsar prediction with different ML algorithms implemented on Python in Jupyter Notebook
