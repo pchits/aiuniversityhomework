@@ -5,87 +5,196 @@ from keras.layers import MaxPooling2D
 from keras.layers import Flatten
 from keras.layers import Dense
 from keras.preprocessing.image import ImageDataGenerator
+from keras.preprocessing import image
+from keras.applications.imagenet_utils import preprocess_input
+from keras.models import model_from_json
 import matplotlib.pyplot as plt
 import numpy as np
 
-# Build the CNN
-classifier = Sequential()
 
-# Convolution
-classifier.add(Conv2D(32, (3, 3), activation="relu", input_shape=(64, 64, 3)))
+print('Teach CNN? [y/n]')
+# input
+todo1 = input()
 
-# Pooling
-classifier.add(MaxPooling2D(pool_size = (2, 2)))
+if (todo1 == 'y'):
 
-# Pooling is made with a 2x2 array
-# Add 2nd convolutional layer with the same structure as the 1st to improve predictions
-classifier.add(Conv2D(32, (3, 3), activation="relu"))
-classifier.add(MaxPooling2D(pool_size = (2, 2)))
+    # Build the CNN
+    classifier = Sequential()
 
-# Flattening
-classifier.add(Flatten())
+    # Convolution
+    classifier.add(Conv2D(32, (3, 3), activation="relu", input_shape=(64, 64, 3)))
 
-# Full Connection
-classifier.add(Dense(activation = 'relu', units = 128))
-classifier.add(Dense(activation = 'sigmoid', units = 1))
+    # Pooling
+    classifier.add(MaxPooling2D(pool_size = (2, 2)))
 
-# Compile the CNN
-classifier.compile(optimizer = 'adam', loss = 'binary_crossentropy', metrics = ['accuracy'])
+    # Pooling is made with a 2x2 array
+    # Add 2nd convolutional layer with the same structure as the 1st to improve predictions
+    classifier.add(Conv2D(32, (3, 3), activation="relu"))
+    classifier.add(MaxPooling2D(pool_size = (2, 2)))
 
-# Image Augmentation
-train_datagen = ImageDataGenerator(rescale = 1./255,
-                                   shear_range = 0.2,
-                                   zoom_range = 0.2,
-                                   horizontal_flip = True)
+    # Flattening
+    classifier.add(Flatten())
 
-# Apply several transformations to train the model in a better significant way, keras documentation provides all the required information for augmentation
-test_datagen = ImageDataGenerator(rescale = 1./255)
+    # Full Connection
+    classifier.add(Dense(activation = 'relu', units = 128))
+    classifier.add(Dense(activation = 'sigmoid', units = 1))
 
-training_set = train_datagen.flow_from_directory('./chest-xray-pneumonia/chest_xray/train',
-                                                 target_size = (64, 64),
-                                                 batch_size = 32,
-                                                 class_mode = 'binary')
+    # Compile the CNN
+    classifier.compile(optimizer = 'adam', loss = 'binary_crossentropy', metrics = ['accuracy'])
 
-test_set = test_datagen.flow_from_directory('./chest-xray-pneumonia/chest_xray/test',
-                                            target_size = (64, 64),
-                                            batch_size = 32,
-                                            class_mode = 'binary')
+    # Image Augmentation
+    train_datagen = ImageDataGenerator(rescale = 1./255,
+                                    shear_range = 0.2,
+                                    zoom_range = 0.2,
+                                    horizontal_flip = True)
 
-classifier.summary()
+    # Apply several transformations to train the model in a better significant way, keras documentation provides
+    # all the required information for augmentation
+    test_datagen = ImageDataGenerator(rescale = 1./255)
 
-history = classifier.fit_generator(training_set,
-                         steps_per_epoch = 163,
-                         epochs = 10,
-                         validation_data = test_set,
-                         validation_steps = 624)
+    print('Adding data sets')
+
+    training_set = train_datagen.flow_from_directory('./chest-xray-pneumonia/chest_xray/train',
+                                                    target_size = (64, 64),
+                                                    batch_size = 32,
+                                                    class_mode = 'binary')
+
+    test_set = test_datagen.flow_from_directory('./chest-xray-pneumonia/chest_xray/test',
+                                                target_size = (64, 64),
+                                                batch_size = 32,
+                                                class_mode = 'binary')
+
+    classifier.summary()
+
+    print('Running fit_generator')
+    print('You can go for coffee. Or for lunch. Or to smoke. Or all of this, you will have a lot of time now...')
+
+    history = classifier.fit_generator(training_set,
+                            steps_per_epoch = 163,
+                            epochs = 10,
+                            validation_data = test_set,
+                            validation_steps = 624)
 
 
-# serialize classifier to JSON
-model_json = classifier.to_json()
-with open("model.json", "w") as json_file:
-    json_file.write(model_json)
-# serialize weights to HDF5
-classifier.save_weights("model.h5")
-print("Saved model to disk")
+    print('Save the model? [y/n]')
+    # input
+    todo2 = input()
 
-#Accuracy
-print(history.history.keys())
-plt.plot(history.history['acc'])
-plt.plot(history.history['val_acc'])
-plt.title('Model Accuracy')
-plt.ylabel('Accuracy')
-plt.xlabel('Epoch')
-plt.legend(['Training set', 'Test set'], loc='upper left')
-plt.show()
+    if (todo2 == 'y'):
 
-#Loss
-plt.plot(history.history['loss'])
-plt.plot(history.history['val_loss'])
-plt.title('Loss')
-plt.ylabel('Loss')
-plt.xlabel('Epoch')
-plt.legend(['Training set', 'Test set'], loc='upper left')
-plt.show()
+        # serialize classifier to JSON
+        model_json = classifier.to_json()
+        with open("model.json", "w") as json_file:
+            json_file.write(model_json)
+        # serialize weights to HDF5
+        classifier.save_weights("model.h5")
+        print("Model saved")
+
+    #Accuracy
+    print(history.history.keys())
+    plt.plot(history.history['acc'])
+    plt.plot(history.history['val_acc'])
+    plt.title('Model Accuracy')
+    plt.ylabel('Accuracy')
+    plt.xlabel('Epoch')
+    plt.legend(['Training set', 'Test set'], loc='upper left')
+    plt.show()
+
+    #Loss
+    plt.plot(history.history['loss'])
+    plt.plot(history.history['val_loss'])
+    plt.title('Loss')
+    plt.ylabel('Loss')
+    plt.xlabel('Epoch')
+    plt.legend(['Training set', 'Test set'], loc='upper left')
+    plt.show()
+
+print('Load the model? [y/n]')
+# input
+todo3 = input()
+
+if (todo3 == 'y'):
+
+    json_file = open('model.json', 'r')
+    loaded_model_json = json_file.read()
+    json_file.close()
+    classifier = model_from_json(loaded_model_json)
+    # load weights into new model
+    classifier.load_weights("model.h5")
+    print("Loaded model from disk")
+
+if ((todo1 != 'y') and (todo3 != 'y')):
+
+    print('Then why are you here? You need help, dude...')
+    exit()
+
+
+print('Test the model? [y/n]')
+# input
+todo4 = input()
+if (todo4 == 'y'):
+    # break
+# else:
+    
+    # predicting images
+    # TODO: use ImageDataGenerator
+    # img1 = image.load_img('./chest-xray-pneumonia/chest_xray/val/PNEUMONIA/person1946_bacteria_4874.jpeg', target_size=(64, 64))
+    # img2 = image.load_img('./chest-xray-pneumonia/chest_xray/val/NORMAL/NORMAL2-IM-1427-0001.jpeg', target_size=(64, 64))
+    
+    # x = image.img_to_array(img1)
+    # x = np.expand_dims(x, axis=0)
+
+    # images = np.vstack([x])
+    # classes = classifier.predict_classes(images, batch_size=10)
+    # print(classes)
+
+    # x = image.img_to_array(img2)
+    # x = np.expand_dims(x, axis=0)
+
+    # images = np.vstack([x])
+    # classes = classifier.predict_classes(images, batch_size=10)
+    # print(classes)
+
+    img = image.load_img('./chest-xray-pneumonia/chest_xray/val/PNEUMONIA/person1946_bacteria_4874.jpeg', target_size=(64, 64))
+    x = image.img_to_array(img)
+    x = np.expand_dims(x, axis=0)
+    x = preprocess_input(x)
+    
+    preds = classifier.predict(x)
+    print("PNEUMONIA =", preds)
+
+    img = image.load_img('./chest-xray-pneumonia/chest_xray/val/NORMAL/NORMAL2-IM-1427-0001.jpeg', target_size=(64, 64))
+    x = image.img_to_array(img)
+    x = np.expand_dims(x, axis=0)
+    x = preprocess_input(x)
+    
+    preds = classifier.predict(x)
+    print("NORMAL =", preds)
+
+    img = image.load_img('./chest-xray-pneumonia/chest_xray/val/PNEUMONIA/person1952_bacteria_4883.jpeg', target_size=(64, 64))
+    x = image.img_to_array(img)
+    x = np.expand_dims(x, axis=0)
+    x = preprocess_input(x)
+    
+    preds = classifier.predict(x)
+    print("PNEUMONIA =", preds)
+
+    img = image.load_img('./chest-xray-pneumonia/chest_xray/val/NORMAL/NORMAL2-IM-1431-0001.jpeg', target_size=(64, 64))
+    x = image.img_to_array(img)
+    x = np.expand_dims(x, axis=0)
+    x = preprocess_input(x)
+    
+    preds = classifier.predict(x)
+    print("NORMAL =", preds)
+
+    img = image.load_img('./chest-xray-pneumonia/chest_xray/val/PNEUMONIA/person1954_bacteria_4886.jpeg', target_size=(64, 64))
+    x = image.img_to_array(img)
+    x = np.expand_dims(x, axis=0)
+    x = preprocess_input(x)
+    
+    preds = classifier.predict(x)
+    print("PNEUMONIA =", preds)
+
 
 
 
