@@ -1,4 +1,3 @@
-# https://www.kaggle.com/antoange/chest-x-ray-pneumonia-detection-with-keras-cnn
 from keras.models import Sequential
 from keras.layers import Conv2D
 from keras.layers import MaxPooling2D
