@@ -1,5 +1,6 @@
 import pandas as pd
 import pickle
+from sklearn.model_selection import GridSearchCV
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
 import seaborn as sns
@@ -222,7 +223,7 @@ print("Model's accuracy before dropping weak features: ", rf_model.score(X_test_
 print("Model's accuracy after dropping weak features: ", rf.score(X_test, y_test))
 
 # Tune the model
-rf = RandomForestClassifier(n_estimators=120)
+rf = RandomForestClassifier(max_depth= 6, max_features= 5)
 rf.fit(X_train_dropped, y_train)
 
 # 180-80
@@ -240,6 +241,21 @@ y_pred = cross_val_predict(rf, X_test_dropped, y_test, cv=10)
 conf_mat = confusion_matrix(y_test, y_pred)
 
 print(conf_mat)
+
+# forest = RandomForestClassifier(n_estimators=100, n_jobs=-1, random_state=17)
+# forest_params = {'max_depth': range(1,11), 'max_features': range(4,7)}
+# forest_grid = GridSearchCV(forest, forest_params,cv=5, n_jobs=-1, verbose=True)
+
+# forest_grid.fit(X_train_dropped, y_train)
+
+# print(forest_grid.best_params_, forest_grid.best_score_)
+
+# y_pred = cross_val_predict(forest_grid, X_test_dropped, y_test, cv=10)
+# conf_mat = confusion_matrix(y_test, y_pred)
+
+# {'max_depth': 6, 'max_features': 5}
+
+# print(conf_mat)
 
 print('Save this model? [y/n]')
 # input
