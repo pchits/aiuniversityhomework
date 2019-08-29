@@ -1,4 +1,5 @@
 import pandas as pd
+import pickle
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
 import seaborn as sns
@@ -6,7 +7,7 @@ from matplotlib import pyplot as plt
 from matplotlib import style
 
 # Evaluations
-from sklearn.metrics import classification_report,confusion_matrix
+from sklearn.metrics import classification_report, confusion_matrix
 # Random Forest
 from sklearn.ensemble import RandomForestClassifier
 # SGDClassifier
@@ -206,13 +207,13 @@ importances = pd.DataFrame({'Feature':stars.columns.drop('target_class'), 'Impor
 importances = importances.sort_values('Importance', ascending=False)
 
 print(importances)
-importances.plot.bar()
-
-plt.show()
+if (todo == 'y'):
+    importances.plot.bar()
+    plt.show()
 
 # Dropping last 2 features
-X_train_dropped = X_train_scaled.drop(list(importances.index[-2:]), axis=1)
-X_test_dropped = X_test_scaled.drop(list(importances.index[-2:]), axis=1)
+X_train_dropped = X_train_scaled.drop(list(importances.index[-1:]), axis=1)
+X_test_dropped = X_test_scaled.drop(list(importances.index[-1:]), axis=1)
 
 rf = RandomForestClassifier(n_estimators=100)
 rf.fit(X_train, y_train)
@@ -239,6 +240,16 @@ y_pred = cross_val_predict(rf, X_test_dropped, y_test, cv=10)
 conf_mat = confusion_matrix(y_test, y_pred)
 
 print(conf_mat)
+
+print('Save this model? [y/n]')
+# input
+todo = input()
+
+if (todo == 'y'):
+    with open('pulsarmodel', 'wb') as f:
+        pickle.dump(rf, f)
+
+    print("Model saved")
 
 
 
