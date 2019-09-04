@@ -40,15 +40,20 @@ stars.columns = ['MOTIP',
 'SOTDSC',
 'target_class']
 
-# Unscaled Data Summary
-plt.figure(figsize=(12,8))
-sns.heatmap(stars.describe()[1:].transpose(),
-            annot=True,linecolor="w",
-            linewidth=2,cmap=sns.color_palette("Set2"))
-plt.title("Data summary")
-# plt.show()
-plt.savefig("summary.png")
-plt.clf()
+print('Update plots? [y/n]')
+# input
+todo_plots = input()
+
+if (todo_plots == 'y'):
+    # Unscaled Data Summary
+    plt.figure(figsize=(12,8))
+    sns.heatmap(stars.describe()[1:].transpose(),
+                annot=True,linecolor="w",
+                linewidth=2,cmap=sns.color_palette("Set2"))
+    plt.title("Data summary")
+    # plt.show()
+    plt.savefig("summary.png")
+    plt.clf()
 
 # Scaling the dataset
 scaled_features = stars.copy()
@@ -68,64 +73,64 @@ print(stars.describe())
 # Checking the presence of null values in the data set
 print(stars.isnull().any())
 
-# Data Summary
-plt.figure(figsize=(12,8))
-sns.heatmap(stars.describe()[1:].transpose(),
-            annot=True,linecolor="w",
-            linewidth=2,cmap=sns.color_palette("Set2"))
-plt.title("Data summary")
-# plt.show()
-plt.savefig("heatmap.png")
-plt.clf()
+if (todo_plots == 'y'):
+    # Data Summary
+    plt.figure(figsize=(12,8))
+    sns.heatmap(stars.describe()[1:].transpose(),
+                annot=True,linecolor="w",
+                linewidth=2,cmap=sns.color_palette("Set2"))
+    plt.title("Data summary")
+    # plt.show()
+    plt.savefig("heatmap.png")
+    plt.clf()
 
-# Check correlation between variables
-correlation = stars.corr()
-plt.figure(figsize=(10,8))
-sns.heatmap(correlation,annot=True,
-            cmap=sns.color_palette("magma"),
-            linewidth=2,edgecolor="k")
-plt.title("Variables correlation")
-# plt.show()
-plt.savefig("correlation.png")
-plt.clf()
+    # Check correlation between variables
+    correlation = stars.corr()
+    plt.figure(figsize=(10,8))
+    sns.heatmap(correlation,annot=True,
+                cmap=sns.color_palette("magma"),
+                linewidth=2,edgecolor="k")
+    plt.title("Variables correlation")
+    # plt.show()
+    plt.savefig("correlation.png")
+    plt.clf()
 
-# Check targets number
-plt.figure(figsize=(12,6))
-plt.subplot(121)
-ax = sns.countplot(y = stars["target_class"],
-                palette=["r","g"],
-                linewidth=1,
-                edgecolor="k"*2)
-for i,j in enumerate(stars["target_class"].value_counts().values):
-    ax.text(.7,i,j,weight = "bold",fontsize = 27)
-plt.title("Count for pulsars in the datset")
+    # Check targets number
+    plt.figure(figsize=(12,6))
+    plt.subplot(121)
+    ax = sns.countplot(y = stars["target_class"],
+                    palette=["r","g"],
+                    linewidth=1,
+                    edgecolor="k"*2)
+    for i,j in enumerate(stars["target_class"].value_counts().values):
+        ax.text(.7,i,j,weight = "bold",fontsize = 27)
+    plt.title("Count for pulsars in the datset")
 
+    plt.subplot(122)
+    plt.pie(stars["target_class"].value_counts().values,
+            labels=["not pulsar stars","pulsar stars"],
+            autopct="%1.0f%%",wedgeprops={"linewidth":2,"edgecolor":"white"})
+    my_circ = plt.Circle((0,0),.7,color = "white")
+    plt.gca().add_artist(my_circ)
+    plt.subplots_adjust(wspace = .2)
+    plt.title("Proportion of pulsars in the dataset")
+    # plt.show()
+    plt.savefig("proportion.png")
+    plt.clf()
 
-plt.subplot(122)
-plt.pie(stars["target_class"].value_counts().values,
-        labels=["not pulsar stars","pulsar stars"],
-        autopct="%1.0f%%",wedgeprops={"linewidth":2,"edgecolor":"white"})
-my_circ = plt.Circle((0,0),.7,color = "white")
-plt.gca().add_artist(my_circ)
-plt.subplots_adjust(wspace = .2)
-plt.title("Proportion of pulsars in the dataset")
-# plt.show()
-plt.savefig("proportion.png")
-plt.clf()
+    # Pairs plot
+    # sns.pairplot(stars,hue="target_class")
+    # plt.title("pair plot for variables")
+    # plt.show()
 
-# Pairs plot
-# sns.pairplot(stars,hue="target_class")
-# plt.title("pair plot for variables")
-# plt.show()
+    # palette2 = sns.color_palette(["#bbbbbb", "#a800a2"])
 
-# palette2 = sns.color_palette(["#bbbbbb", "#a800a2"])
-
-# pg = sns.PairGrid(stars, hue = "target_class", hue_order = [0, 1], vars = stars.columns)
-pg = sns.pairplot(stars, hue = "target_class", hue_order = [0, 1], vars = stars.columns, height=10)
-pg.map_diag(sns.kdeplot),
-pg.map_offdiag(plt.scatter, s = 1, alpha = 0.2)
-pg.savefig("pairs.png")
-plt.clf()
+    # pg = sns.PairGrid(stars, hue = "target_class", hue_order = [0, 1], vars = stars.columns)
+    pg = sns.pairplot(stars, hue = "target_class", hue_order = [0, 1], vars = stars.columns, height=10)
+    pg.map_diag(sns.kdeplot),
+    pg.map_offdiag(plt.scatter, s = 1, alpha = 0.2)
+    pg.savefig("pairs.png")
+    plt.clf()
 
 # PCA
 groups = stars.groupby(['target_class'])
@@ -137,14 +142,15 @@ pca.fit(stars.filter(regex = "[^target_class]").values)
 nonPulsarComponents = pca.transform(nonPulsarsG.filter(regex = "[^target_class]").values)
 pulsarComponents = pca.transform(pulsarsG.filter(regex = "[^target_class]").values)
 
-fig = plt.figure(figsize = (10, 10))
-ax1 = fig.add_subplot(111)
-ax1.scatter(nonPulsarComponents[:, 0], nonPulsarComponents[:, 1], s = 10, label = 'Non-Pulsars')
-ax1.scatter(pulsarComponents[:, 0], pulsarComponents[:, 1], s = 10, label = 'Pulsars')
-ax1.axis('tight')
-plt.legend(loc = 'lower left')
-plt.savefig("pca.png")
-plt.clf()
+if (todo_plots == 'y'):
+    fig = plt.figure(figsize = (10, 10))
+    ax1 = fig.add_subplot(111)
+    ax1.scatter(nonPulsarComponents[:, 0], nonPulsarComponents[:, 1], s = 10, label = 'Non-Pulsars')
+    ax1.scatter(pulsarComponents[:, 0], pulsarComponents[:, 1], s = 10, label = 'Pulsars')
+    ax1.axis('tight')
+    plt.legend(loc = 'lower left')
+    plt.savefig("pca.png")
+    plt.clf()
 
 # Search for Outlier
 
@@ -165,18 +171,20 @@ plt.scatter(nonPulsarComponents[:, 0], nonPulsarComponents[:, 1], color='k', s=3
 # radius = (X_scores.max() - X_scores) / (X_scores.max() - X_scores.min())
 radius = (X_scores.max() - X_scores) / (X_scores.max() - X_scores.min())
 radius[radius < 0.2] = 0
-plt.scatter(nonPulsarComponents[:, 0], nonPulsarComponents[:, 1], s=1000 * radius, edgecolors='r',
-            facecolors='none', label='Outlier scores')
-plt.axis('tight')
-plt.xlim((-5, 5))
-plt.ylim((-5, 5))
 
-legend = plt.legend(loc='upper left')
-legend.legendHandles[0]._sizes = [10]
-legend.legendHandles[1]._sizes = [20]
+if (todo_plots == 'y'):
+    plt.scatter(nonPulsarComponents[:, 0], nonPulsarComponents[:, 1], s=1000 * radius, edgecolors='r',
+                facecolors='none', label='Outlier scores')
+    plt.axis('tight')
+    plt.xlim((-5, 5))
+    plt.ylim((-5, 5))
 
-plt.savefig("OutlierNonP.png")
-plt.clf()
+    legend = plt.legend(loc='upper left')
+    legend.legendHandles[0]._sizes = [10]
+    legend.legendHandles[1]._sizes = [20]
+
+    plt.savefig("OutlierNonP.png")
+    plt.clf()
 
 # Clearing the dataset
 
@@ -201,18 +209,20 @@ plt.scatter(pulsarComponents[:, 0], pulsarComponents[:, 1], color='k', s=3., lab
 # radius = (X_scores.max() - X_scores) / (X_scores.max() - X_scores.min())
 radius = (X_scores.max() - X_scores) / (X_scores.max() - X_scores.min())
 radius[radius < 0.2] = 0
-plt.scatter(pulsarComponents[:, 0], pulsarComponents[:, 1], s=1000 * radius, edgecolors='r',
-            facecolors='none', label='Outlier scores')
-plt.axis('tight')
-plt.xlim((-5, 5))
-plt.ylim((-5, 5))
 
-legend = plt.legend(loc='upper left')
-legend.legendHandles[0]._sizes = [10]
-legend.legendHandles[1]._sizes = [20]
+if (todo_plots == 'y'):
+    plt.scatter(pulsarComponents[:, 0], pulsarComponents[:, 1], s=1000 * radius, edgecolors='r',
+                facecolors='none', label='Outlier scores')
+    plt.axis('tight')
+    plt.xlim((-5, 5))
+    plt.ylim((-5, 5))
 
-plt.savefig("OutlierP.png")
-plt.clf()
+    legend = plt.legend(loc='upper left')
+    legend.legendHandles[0]._sizes = [10]
+    legend.legendHandles[1]._sizes = [20]
+
+    plt.savefig("OutlierP.png")
+    plt.clf()
 
 # Clearing the dataset
 
@@ -223,8 +233,6 @@ PulsarsClear = pulsarsG.drop(outlier_indexes)
 # Full cleared dataset
 
 cleared_full_data = pd.concat([nonPulsarsClear, PulsarsClear])
-
-print(cleared_full_data.head(5))
 
 # Dropping week features
 
@@ -250,115 +258,121 @@ y = cleared_full_data['target_class'].copy()
 
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, stratify=y, random_state=0)
 
-# # MODELS===============================================
+# MODELS===============================================
 
-# # RF===============================================
+print('Test all models? [y/n]')
+# input
+todo_models = input()
 
-# print('RandomForestClassifier: \n')
+if (todo_models == 'y'):
 
-# rf_model = RandomForestClassifier(n_estimators=200, random_state = 0)
-# rf_model.fit(X_train, y_train)
+    # RF===============================================
 
-# # Prediction using Random Forest Model
-# rf_prediction = rf_model.predict(X_test)
+    print('RandomForestClassifier: \n')
 
-# # Evaluations
-# print('Classification Report: \n')
-# print(classification_report(y_test, rf_prediction))
-# print('\nConfusion Matrix: \n')
-# print(confusion_matrix(y_test, rf_prediction))
+    rf_model = RandomForestClassifier(n_estimators=200, random_state = 0)
+    rf_model.fit(X_train, y_train)
 
-# # Cross validation
-# print('\nCross validation: \n')
-# recall_estimate = cross_val_score(rf_model, X_test, y_test, cv=10, scoring='recall_weighted')
-# print("Recall: " + str(round(100*recall_estimate.mean(), 2)) + "%")
+    # Prediction using Random Forest Model
+    rf_prediction = rf_model.predict(X_test)
 
-# y_pred = cross_val_predict(rf_model, X_test, y_test, cv=10)
-# conf_mat = confusion_matrix(y_test, y_pred)
+    # Evaluations
+    print('Classification Report: \n')
+    print(classification_report(y_test, rf_prediction))
+    print('\nConfusion Matrix: \n')
+    print(confusion_matrix(y_test, rf_prediction))
 
-# print(conf_mat)
+    # Cross validation
+    print('\nCross validation: \n')
+    recall_estimate = cross_val_score(rf_model, X_test, y_test, cv=10, scoring='recall_weighted')
+    print("Recall: " + str(round(100*recall_estimate.mean(), 2)) + "%")
 
-# # LinearSVC===============================================
+    y_pred = cross_val_predict(rf_model, X_test, y_test, cv=10)
+    conf_mat = confusion_matrix(y_test, y_pred)
 
-# print('LinearSVC: \n')
+    print(conf_mat)
 
-# linear_svc = LinearSVC(random_state = 0)
-# linear_svc.fit(X_train, y_train)
+    # LinearSVC===============================================
 
-# # Prediction using LinearSVC
-# linear_svc_prediction = linear_svc.predict(X_test)
+    print('LinearSVC: \n')
 
-# # Evaluations
-# print('Classification Report: \n')
-# print(classification_report(y_test, linear_svc_prediction))
-# print('\nConfusion Matrix: \n')
-# print(confusion_matrix(y_test, linear_svc_prediction))
+    linear_svc = LinearSVC(random_state = 0)
+    linear_svc.fit(X_train, y_train)
 
-# # Cross validation
-# print('\nCross validation: \n')
-# recall_estimate = cross_val_score(linear_svc, X_test, y_test, cv=10, scoring='recall_weighted')
-# print("Recall: " + str(round(100*recall_estimate.mean(), 2)) + "%")
+    # Prediction using LinearSVC
+    linear_svc_prediction = linear_svc.predict(X_test)
 
-# y_pred = cross_val_predict(linear_svc, X_test, y_test, cv=10)
-# conf_mat = confusion_matrix(y_test, y_pred)
+    # Evaluations
+    print('Classification Report: \n')
+    print(classification_report(y_test, linear_svc_prediction))
+    print('\nConfusion Matrix: \n')
+    print(confusion_matrix(y_test, linear_svc_prediction))
 
-# print(conf_mat)
+    # Cross validation
+    print('\nCross validation: \n')
+    recall_estimate = cross_val_score(linear_svc, X_test, y_test, cv=10, scoring='recall_weighted')
+    print("Recall: " + str(round(100*recall_estimate.mean(), 2)) + "%")
 
-# # SGDClassifier===============================================
+    y_pred = cross_val_predict(linear_svc, X_test, y_test, cv=10)
+    conf_mat = confusion_matrix(y_test, y_pred)
 
-# print('SGDClassifier: \n')
+    print(conf_mat)
 
-# sgd = SGDClassifier(random_state = 0)
-# sgd.fit(X_train, y_train)
+    # SGDClassifier===============================================
 
-# # Prediction using SGDClassifier
-# sgd_prediction = sgd.predict(X_test)
+    print('SGDClassifier: \n')
 
-# # Evaluations
-# print('Classification Report: \n')
-# print(classification_report(y_test, sgd_prediction))
-# print('\nConfusion Matrix: \n')
-# print(confusion_matrix(y_test,sgd_prediction))
+    sgd = SGDClassifier(random_state = 0)
+    sgd.fit(X_train, y_train)
 
-# # Cross validation
-# print('\nCross validation: \n')
-# recall_estimate = cross_val_score(sgd, X_test, y_test, cv=10, scoring='recall_weighted')
-# print("Recall: " + str(round(100*recall_estimate.mean(), 2)) + "%")
+    # Prediction using SGDClassifier
+    sgd_prediction = sgd.predict(X_test)
 
-# y_pred = cross_val_predict(sgd, X_test, y_test, cv=10)
-# conf_mat = confusion_matrix(y_test, y_pred)
+    # Evaluations
+    print('Classification Report: \n')
+    print(classification_report(y_test, sgd_prediction))
+    print('\nConfusion Matrix: \n')
+    print(confusion_matrix(y_test,sgd_prediction))
 
-# print(conf_mat)
+    # Cross validation
+    print('\nCross validation: \n')
+    recall_estimate = cross_val_score(sgd, X_test, y_test, cv=10, scoring='recall_weighted')
+    print("Recall: " + str(round(100*recall_estimate.mean(), 2)) + "%")
 
-# # GradientBoostingClassifier===============================================
+    y_pred = cross_val_predict(sgd, X_test, y_test, cv=10)
+    conf_mat = confusion_matrix(y_test, y_pred)
 
-# print('GradientBoostingClassifier: \n')
+    print(conf_mat)
 
-# gradient_boosting = GradientBoostingClassifier(random_state = 0)
-# gradient_boosting.fit(X_train, y_train)
+    # GradientBoostingClassifier===============================================
 
-# # Prediction using GradientBoostingClassifier
-# gradient_boosting_prediction = gradient_boosting.predict(X_test)
+    print('GradientBoostingClassifier: \n')
 
-# # Evaluations
-# print('Classification Report: \n')
-# print(classification_report(y_test, gradient_boosting_prediction))
-# print('\nConfusion Matrix: \n')
-# print(confusion_matrix(y_test, gradient_boosting_prediction))
+    gradient_boosting = GradientBoostingClassifier(random_state = 0)
+    gradient_boosting.fit(X_train, y_train)
 
-# # Cross validation
-# print('\nCross validation: \n')
-# recall_estimate = cross_val_score(gradient_boosting, X_test, y_test, cv=10, scoring='recall_weighted')
-# print("Recall: " + str(round(100*recall_estimate.mean(), 2)) + "%")
+    # Prediction using GradientBoostingClassifier
+    gradient_boosting_prediction = gradient_boosting.predict(X_test)
 
-# y_pred = cross_val_predict(gradient_boosting, X_test, y_test, cv=10)
-# conf_mat = confusion_matrix(y_test, y_pred)
+    # Evaluations
+    print('Classification Report: \n')
+    print(classification_report(y_test, gradient_boosting_prediction))
+    print('\nConfusion Matrix: \n')
+    print(confusion_matrix(y_test, gradient_boosting_prediction))
 
-# print(conf_mat)
+    # Cross validation
+    print('\nCross validation: \n')
+    recall_estimate = cross_val_score(gradient_boosting, X_test, y_test, cv=10, scoring='recall_weighted')
+    print("Recall: " + str(round(100*recall_estimate.mean(), 2)) + "%")
+
+    y_pred = cross_val_predict(gradient_boosting, X_test, y_test, cv=10)
+    conf_mat = confusion_matrix(y_test, y_pred)
+
+    print(conf_mat)
 
 # Selecting RF, let's tune it===============================================
 
-print('\nTuning RF:')
+# print('\nTuning RF:')
 
 # #fit random forest
 # forest = RandomForestClassifier(random_state = 0)
@@ -384,6 +398,8 @@ print('\nTuning RF:')
 # print('\nbest model:')
 # print(grid_best)
 
+# # From GridSearchCV we have:
+
 # RandomForestClassifier(bootstrap=True, class_weight='balanced_subsample',
 #                        criterion='gini', max_depth=15, max_features=4,
 #                        max_leaf_nodes=None, min_impurity_decrease=0.0,
@@ -392,12 +408,22 @@ print('\nTuning RF:')
 #                        n_estimators=115, n_jobs=None, oob_score=False,
 #                        random_state=0, verbose=0, warm_start=False)
 
+# forest = RandomForestClassifier(bootstrap=True, class_weight='balanced_subsample',
+#                        criterion='gini', max_depth=15, max_features=4,
+#                        max_leaf_nodes=None, min_impurity_decrease=0.0,
+#                        min_impurity_split=None, min_samples_leaf=1,
+#                        min_samples_split=40, min_weight_fraction_leaf=0.0,
+#                        n_estimators=120, n_jobs=None, oob_score=False,
+#                        random_state=0, verbose=0, warm_start=False)
+
+print('\nTesting best model:')
+
 forest = RandomForestClassifier(bootstrap=True, class_weight='balanced_subsample',
                        criterion='gini', max_depth=15, max_features=4,
                        max_leaf_nodes=None, min_impurity_decrease=0.0,
                        min_impurity_split=None, min_samples_leaf=1,
-                       min_samples_split=2, min_weight_fraction_leaf=0.0,
-                       n_estimators=115, n_jobs=None, oob_score=False,
+                       min_samples_split=40, min_weight_fraction_leaf=0.0,
+                       n_estimators=120, n_jobs=None, oob_score=False,
                        random_state=0, verbose=0, warm_start=False)
 
 forest.fit(X_train, y_train)
@@ -411,20 +437,23 @@ print(classification_report(y_test, rf_prediction))
 print('\nConfusion Matrix: \n')
 print(confusion_matrix(y_test, rf_prediction))
 
-# print('\nTesting best model:')
+recall_estimate = cross_val_score(forest, X_test, y_test, cv=10, scoring='recall_weighted')
+print("Recall: " + str(round(100*recall_estimate.mean(), 2)) + "%")
 
-# recall_estimate = cross_val_score(forest, X_test, y_test, cv=10, scoring='recall_weighted')
-# print("Recall: " + str(round(100*recall_estimate.mean(), 2)) + "%")
+y_pred = cross_val_predict(forest, X_test, y_test, cv=10)
+conf_mat = confusion_matrix(y_test, y_pred)
 
-# y_pred = cross_val_predict(forest, X_test, y_test, cv=10)
-# conf_mat = confusion_matrix(y_test, y_pred)
+print(conf_mat)
 
-# print(conf_mat)
+print('Save this model? [y/n]')
+# input
+todo_save = input()
 
-# with open('pulsarmodel', 'wb') as f:
-#     pickle.dump(grid_best, f)
+if (todo_save == 'y'):
+    with open('pulsarmodel', 'wb') as f:
+        pickle.dump(forest, f)
 
-# print("Model saved")
+    print("Model saved")
 
 
 
