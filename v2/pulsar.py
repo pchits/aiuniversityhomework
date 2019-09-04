@@ -10,6 +10,7 @@ import numpy as np
 # RandomizedSearchCV for tuning RF params
 from sklearn.model_selection import RandomizedSearchCV
 
+
 # Evaluations
 from sklearn.metrics import classification_report, confusion_matrix
 # Random Forest
@@ -442,6 +443,43 @@ print("Recall: " + str(round(100*recall_estimate.mean(), 2)) + "%")
 
 y_pred = cross_val_predict(forest, X_test, y_test, cv=10)
 conf_mat = confusion_matrix(y_test, y_pred)
+
+
+
+# Show confusion matrix in a separate window
+# thresh = conf_mat.max() / 1.5
+plt.matshow(conf_mat)
+plt.title('Confusion matrix')
+plt.colorbar(cmap="BuPu", alpha=0.4)
+plt.ylabel('True label')
+plt.xlabel('Predicted label')
+for i in range(2):
+    for j in range(2):
+        # plt.text(j,i, str(conf_mat[i][j])[:6])
+        plt.text(j, i, str(conf_mat[i][j])[:6],
+                     horizontalalignment="center",
+                     color="red")
+plt.savefig("matrix.png")
+plt.clf()
+
+# thresh = conf_mat.max() / 2
+conf_mat = confusion_matrix(y_test, y_pred)
+conf_mat = conf_mat/conf_mat.astype(np.float).sum(axis=1)
+# Show confusion matrix in a separate window
+plt.matshow(conf_mat)
+plt.title('Confusion matrix')
+plt.colorbar(cmap="BuPu", alpha=0.4)
+plt.ylabel('True label')
+plt.xlabel('Predicted label')
+for i in range(2):
+    for j in range(2):
+        # plt.text(j,i, str(conf_mat[i][j])[:6])
+        plt.text(j, i, str(conf_mat[i][j])[:6],
+                     horizontalalignment="center",
+                     color="red")
+plt.savefig("matrix.png")
+plt.savefig("matrixN.png")
+plt.clf()
 
 print(conf_mat)
 
