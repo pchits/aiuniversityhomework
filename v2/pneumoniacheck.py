@@ -146,9 +146,9 @@ if ((todo1 != 'y') and (todo3 != 'y')):
     exit()
 
 
-print('Test the model? [y/n]')
-# input
-todo4 = input()
+# print('Test the model? [y/n]')
+# # input
+# todo4 = input()
 
 # todo4 = 'y'
 
