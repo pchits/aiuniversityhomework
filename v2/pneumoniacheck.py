@@ -173,12 +173,14 @@ if (todo4 == 'y'):
     # probabilities = classifier.predict_generator(val_set, steps=nb_samples)
     probabilities = classifier.predict_generator(val_set, steps = np.ceil(nb_samples/desired_batch_size))
     
+    y_pred = np.around(probabilities)
 
     print(probabilities)
+    print(y_pred)
     print(val_set.classes)
 
-    y_pred = np.argmax(probabilities, axis=1)
-    print(y_pred)
+    #y_pred = np.argmax(probabilities, axis=1)
+    #print(y_pred)
 
     print('Confusion Matrix')
     print(confusion_matrix(val_set.classes, y_pred))
