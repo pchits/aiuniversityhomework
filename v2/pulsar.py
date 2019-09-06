@@ -477,7 +477,8 @@ for i in range(2):
         plt.text(j, i, str(conf_mat[i][j])[:6],
                      horizontalalignment="center",
                      color="red")
-                     
+
+
 plt.savefig("matrixN.png")
 plt.clf()
 

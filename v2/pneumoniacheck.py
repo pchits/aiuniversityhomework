@@ -79,7 +79,7 @@ if (todo1 == 'y'):
 
     history = classifier.fit_generator(training_set,
                             steps_per_epoch = 163,
-                            epochs = 20,
+                            epochs = 32,
                             validation_data = test_set,
                             validation_steps = 624)
 
@@ -87,9 +87,9 @@ if (todo1 == 'y'):
     print('Save the model? [y/n]')
 
     # input
-    todo2 = input()
+    # todo2 = input()
 
-    # todo2 = 'y'
+    todo2 = 'n'
 
     if (todo2 == 'y'):
 
@@ -124,14 +124,15 @@ if (todo1 == 'y'):
 
 print('Load the model? [y/n]')
 
-# input
+# # input
 
-todo3 = input()
+# todo3 = input()
 
-# todo3 = 'y'
+todo3 = 'y'
 
 if (todo3 == 'y'):
 
+    # load json and create model
     json_file = open('model.json', 'r')
     loaded_model_json = json_file.read()
     json_file.close()
@@ -139,90 +140,95 @@ if (todo3 == 'y'):
     # load weights into new model
     classifier.load_weights("model.h5")
     print("Loaded model from disk")
-
-if ((todo1 != 'y') and (todo3 != 'y')):
-
-    print('Then why are you here? You need help, dude...')
-    exit()
+    
+    # evaluate loaded model on test data
+    classifier.compile(optimizer = 'adam', loss = 'binary_crossentropy', metrics = ['accuracy'])
 
 
-# print('Test the model? [y/n]')
-# # input
+# if ((todo1 != 'y') and (todo3 != 'y')):
+
+#     print('Then why are you here? You need help, dude...')
+#     exit()
+
+
+print('Test the model? [y/n]')
+# input
 # todo4 = input()
 
-# todo4 = 'y'
+todo4 = 'y'
 
 if (todo4 == 'y'):
-    # desired_batch_size = 8
+    desired_batch_size = 8
 
-    # val_datagen = ImageDataGenerator(rescale = 1./255)
-    # val_set = val_datagen.flow_from_directory('./chest_xray/val',
-    #                                             target_size = (64, 64),
-    #                                             batch_size = desired_batch_size,
-    #                                             class_mode = 'binary')
-    # filenames = val_set.filenames
-    # nb_samples = len(filenames)
+    val_datagen = ImageDataGenerator(rescale = 1./255)
+    val_set = val_datagen.flow_from_directory('./chest_xray/val',
+                                                target_size = (64, 64),
+                                                batch_size = desired_batch_size,
+                                                class_mode = 'binary')
+    filenames = val_set.filenames
+    nb_samples = len(filenames)
 
-    # print(nb_samples)
+    print(nb_samples)
 
-    # # probabilities = classifier.predict_generator(val_set, steps=nb_samples)
-    # probabilities = classifier.predict_generator(val_set, steps = np.ceil(nb_samples/desired_batch_size))
+    # probabilities = classifier.predict_generator(val_set, steps=nb_samples)
+    probabilities = classifier.predict_generator(val_set, steps = np.ceil(nb_samples/desired_batch_size))
     
 
-    # print(probabilities)
-    # print(val_set.classes)
+    print(probabilities)
+    print(val_set.classes)
 
-    # y_pred = np.argmax(probabilities, axis=1)
+    y_pred = np.argmax(probabilities, axis=1)
+    print(y_pred)
 
-    # print('Confusion Matrix')
-    # print(confusion_matrix(val_set.classes, y_pred))
-    # print('Classification Report')
-    # target_names = ['Normal', 'Pneumonia']
-    # print(classification_report(val_set.classes, y_pred, target_names=target_names))
+    print('Confusion Matrix')
+    print(confusion_matrix(val_set.classes, y_pred))
+    print('Classification Report')
+    target_names = ['Normal', 'Pneumonia']
+    print(classification_report(val_set.classes, y_pred, target_names=target_names))
     
     # predicting images
 
-    # print(classifier)
+    print(classifier)
 
-    # img = image.load_img('./chest_xray/val/NORMAL/NORMAL2-IM-1427-0001.jpeg', target_size=(64, 64))
-    # x = image.img_to_array(img)
-    # x = np.expand_dims(x, axis=0)
-    # x = preprocess_input(x)
+    img = image.load_img('./chest_xray/val/NORMAL/NORMAL2-IM-1427-0001.jpeg', target_size=(64, 64))
+    x = image.img_to_array(img)
+    x = np.expand_dims(x, axis=0)
+    x = preprocess_input(x)
     
-    # preds = classifier.predict(x)
-    # print("NORMAL =", preds)
+    preds = classifier.predict(x)
+    print("NORMAL =", preds)
 
-    # img = image.load_img('./chest_xray/val/PNEUMONIA/person1952_bacteria_4883.jpeg', target_size=(64, 64))
-    # x = image.img_to_array(img)
-    # x = np.expand_dims(x, axis=0)
-    # x = preprocess_input(x)
+    img = image.load_img('./chest_xray/val/PNEUMONIA/person1952_bacteria_4883.jpeg', target_size=(64, 64))
+    x = image.img_to_array(img)
+    x = np.expand_dims(x, axis=0)
+    x = preprocess_input(x)
     
-    # preds = classifier.predict(x)
-    # print("PNEUMONIA =", preds)
+    preds = classifier.predict(x)
+    print("PNEUMONIA =", preds)
 
-    # img = image.load_img('./chest_xray/val/NORMAL/NORMAL2-IM-1431-0001.jpeg', target_size=(64, 64))
-    # x = image.img_to_array(img)
-    # x = np.expand_dims(x, axis=0)
-    # x = preprocess_input(x)
+    img = image.load_img('./chest_xray/val/NORMAL/NORMAL2-IM-1431-0001.jpeg', target_size=(64, 64))
+    x = image.img_to_array(img)
+    x = np.expand_dims(x, axis=0)
+    x = preprocess_input(x)
     
-    # preds = classifier.predict(x)
-    # print("NORMAL =", preds)
+    preds = classifier.predict(x)
+    print("NORMAL =", preds)
 
-    # img = image.load_img('./chest_xray/val/PNEUMONIA/person1954_bacteria_4886.jpeg', target_size=(64, 64))
-    # x = image.img_to_array(img)
-    # x = np.expand_dims(x, axis=0)
-    # x = preprocess_input(x)
+    img = image.load_img('./chest_xray/val/PNEUMONIA/person1954_bacteria_4886.jpeg', target_size=(64, 64))
+    x = image.img_to_array(img)
+    x = np.expand_dims(x, axis=0)
+    x = preprocess_input(x)
     
-    # preds = classifier.predict(x)
-    # print("PNEUMONIA =", preds)
+    preds = classifier.predict(x)
+    print("PNEUMONIA =", preds)
 
-    # img = image.load_img('./chest_xray/val/NORMAL/NORMAL2-IM-1430-0001.jpeg', target_size=(64, 64))
-    # x = image.img_to_array(img)
-    # x = np.expand_dims(x, axis=0)
-    # x = preprocess_input(x)
+    img = image.load_img('./chest_xray/val/NORMAL/NORMAL2-IM-1430-0001.jpeg', target_size=(64, 64))
+    x = image.img_to_array(img)
+    x = np.expand_dims(x, axis=0)
+    x = preprocess_input(x)
     
-    # preds = classifier.predict(x)
-    # print("NORMAL =", preds)
+    preds = classifier.predict(x)
+    print("NORMAL =", preds)
 
 
 
@@ -255,46 +261,86 @@ if (todo4 == 'y'):
 # Trainable params: 813,217
 # Non-trainable params: 0
 
-# Epoch 1/20
-# 2019-09-05 02:15:13.993288: I tensorflow/core/platform/cpu_feature_guard.cc:145] This TensorFlow binary is optimized with Intel(R) MKL-DNN to use the following CPU instructions in performance critical operations:  SSE4.1 SSE4.2 AVX AVX2 FMA
+# Epoch 1/40
+# 2019-09-05 14:30:41.848441: I tensorflow/core/platform/cpu_feature_guard.cc:145] This TensorFlow binary is optimized with Intel(R) MKL-DNN to use the following CPU instructions in performance critical operations:  SSE4.1 SSE4.2 AVX AVX2 FMA
 # To enable them in non-MKL-DNN operations, rebuild TensorFlow with the appropriate compiler flags.
-# 2019-09-05 02:15:13.993787: I tensorflow/core/common_runtime/process_util.cc:115] Creating new thread pool with default inter op setting: 8. Tune using inter_op_parallelism_threads for best performance.
-# 163/163 [==============================] - 316s 2s/step - loss: 0.4211 - acc: 0.8117 - val_loss: 0.4413 - val_acc: 0.7784
-# Epoch 2/20
-# 163/163 [==============================] - 250s 2s/step - loss: 0.2291 - acc: 0.9045 - val_loss: 0.3890 - val_acc: 0.8198
-# Epoch 3/20
-# 163/163 [==============================] - 248s 2s/step - loss: 0.2162 - acc: 0.9076 - val_loss: 0.3338 - val_acc: 0.8684
-# Epoch 4/20
-# 163/163 [==============================] - 250s 2s/step - loss: 0.1882 - acc: 0.9208 - val_loss: 0.3086 - val_acc: 0.8732
-# Epoch 5/20
-# 163/163 [==============================] - 244s 1s/step - loss: 0.1827 - acc: 0.9294 - val_loss: 0.3645 - val_acc: 0.8495
-# Epoch 6/20
-# 163/163 [==============================] - 245s 2s/step - loss: 0.1653 - acc: 0.9350 - val_loss: 0.4391 - val_acc: 0.8300
-# Epoch 7/20
-# 163/163 [==============================] - 246s 2s/step - loss: 0.1568 - acc: 0.9402 - val_loss: 0.3363 - val_acc: 0.8814
-# Epoch 8/20
-# 163/163 [==============================] - 241s 1s/step - loss: 0.1634 - acc: 0.9375 - val_loss: 0.4293 - val_acc: 0.8449
-# Epoch 9/20
-# 163/163 [==============================] - 240s 1s/step - loss: 0.1500 - acc: 0.9417 - val_loss: 0.2948 - val_acc: 0.8927
-# Epoch 10/20
-# 163/163 [==============================] - 239s 1s/step - loss: 0.1615 - acc: 0.9379 - val_loss: 0.4510 - val_acc: 0.8204
-# Epoch 11/20
-# 163/163 [==============================] - 243s 1s/step - loss: 0.1488 - acc: 0.9433 - val_loss: 0.5504 - val_acc: 0.8030
-# Epoch 12/20
-# 163/163 [==============================] - 244s 1s/step - loss: 0.1465 - acc: 0.9415 - val_loss: 0.3640 - val_acc: 0.8751
-# Epoch 13/20
-# 163/163 [==============================] - 243s 1s/step - loss: 0.1406 - acc: 0.9471 - val_loss: 0.2853 - val_acc: 0.8959
-# Epoch 14/20
-# 163/163 [==============================] - 243s 1s/step - loss: 0.1413 - acc: 0.9433 - val_loss: 0.4722 - val_acc: 0.8397
-# Epoch 15/20
-# 163/163 [==============================] - 244s 1s/step - loss: 0.1278 - acc: 0.9519 - val_loss: 0.2726 - val_acc: 0.9021
-# Epoch 16/20
-# 163/163 [==============================] - 244s 1s/step - loss: 0.1213 - acc: 0.9525 - val_loss: 0.3967 - val_acc: 0.8687
-# Epoch 17/20
-# 163/163 [==============================] - 244s 1s/step - loss: 0.1191 - acc: 0.9563 - val_loss: 0.4358 - val_acc: 0.8397
-# Epoch 18/20
-# 163/163 [==============================] - 245s 2s/step - loss: 0.1225 - acc: 0.9526 - val_loss: 0.3605 - val_acc: 0.8655
-# Epoch 19/20
-# 163/163 [==============================] - 245s 2s/step - loss: 0.1217 - acc: 0.9544 - val_loss: 0.4480 - val_acc: 0.8648
-# Epoch 20/20
-# 163/163 [==============================] - 243s 1s/step - loss: 0.1223 - acc: 0.9523 - val_loss: 0.2973 - val_acc: 0.9057
+# 2019-09-05 14:30:41.850868: I tensorflow/core/common_runtime/process_util.cc:115] Creating new thread pool with default inter op setting: 8. Tune using inter_op_parallelism_threads for best performance.
+# 163/163 [==============================] - 314s 2s/step - loss: 0.3452 - acc: 0.8472 - val_loss: 0.4983 - val_acc: 0.7723
+# Epoch 2/40
+# 163/163 [==============================] - 246s 2s/step - loss: 0.2499 - acc: 0.8988 - val_loss: 0.4193 - val_acc: 0.8321
+# Epoch 3/40
+# 163/163 [==============================] - 246s 2s/step - loss: 0.2195 - acc: 0.9124 - val_loss: 0.3073 - val_acc: 0.8728
+# Epoch 4/40
+# 163/163 [==============================] - 245s 2s/step - loss: 0.1817 - acc: 0.9262 - val_loss: 0.3759 - val_acc: 0.8532
+# Epoch 5/40
+# 163/163 [==============================] - 246s 2s/step - loss: 0.1670 - acc: 0.9354 - val_loss: 0.3110 - val_acc: 0.8892
+# Epoch 6/40
+# 163/163 [==============================] - 244s 1s/step - loss: 0.1551 - acc: 0.9415 - val_loss: 0.2648 - val_acc: 0.8942
+# Epoch 7/40
+# 163/163 [==============================] - 246s 2s/step - loss: 0.1698 - acc: 0.9340 - val_loss: 0.3339 - val_acc: 0.8638
+# Epoch 8/40
+# 163/163 [==============================] - 246s 2s/step - loss: 0.1456 - acc: 0.9442 - val_loss: 0.2805 - val_acc: 0.8817
+# Epoch 9/40
+# 163/163 [==============================] - 244s 1s/step - loss: 0.1354 - acc: 0.9513 - val_loss: 0.2873 - val_acc: 0.8972
+# Epoch 10/40
+# 163/163 [==============================] - 245s 2s/step - loss: 0.1329 - acc: 0.9479 - val_loss: 0.3240 - val_acc: 0.8765
+# Epoch 11/40
+# 163/163 [==============================] - 246s 2s/step - loss: 0.1299 - acc: 0.9494 - val_loss: 0.3013 - val_acc: 0.8959
+# Epoch 12/40
+# 163/163 [==============================] - 245s 2s/step - loss: 0.1291 - acc: 0.9498 - val_loss: 0.3146 - val_acc: 0.8703
+# Epoch 13/40
+# 163/163 [==============================] - 246s 2s/step - loss: 0.1254 - acc: 0.9509 - val_loss: 0.3129 - val_acc: 0.8941
+# Epoch 14/40
+# 163/163 [==============================] - 246s 2s/step - loss: 0.1244 - acc: 0.9532 - val_loss: 0.2740 - val_acc: 0.9087
+# Epoch 15/40
+# 163/163 [==============================] - 245s 2s/step - loss: 0.1256 - acc: 0.9505 - val_loss: 0.2978 - val_acc: 0.9055
+# Epoch 16/40
+# 163/163 [==============================] - 243s 1s/step - loss: 0.1168 - acc: 0.9534 - val_loss: 0.2972 - val_acc: 0.9119
+# Epoch 17/40
+# 163/163 [==============================] - 244s 1s/step - loss: 0.1277 - acc: 0.9528 - val_loss: 0.4050 - val_acc: 0.8799
+# Epoch 18/40
+# 163/163 [==============================] - 244s 1s/step - loss: 0.1135 - acc: 0.9544 - val_loss: 0.2761 - val_acc: 0.9131
+# Epoch 19/40
+# 163/163 [==============================] - 245s 2s/step - loss: 0.1103 - acc: 0.9590 - val_loss: 0.3653 - val_acc: 0.8896
+# Epoch 20/40
+# 163/163 [==============================] - 244s 1s/step - loss: 0.1073 - acc: 0.9586 - val_loss: 0.3977 - val_acc: 0.8814
+# Epoch 21/40
+# 163/163 [==============================] - 245s 2s/step - loss: 0.1010 - acc: 0.9613 - val_loss: 0.3914 - val_acc: 0.8796
+# Epoch 22/40
+# 163/163 [==============================] - 244s 1s/step - loss: 0.1188 - acc: 0.9544 - val_loss: 0.4199 - val_acc: 0.8660
+# Epoch 23/40
+# 163/163 [==============================] - 245s 2s/step - loss: 0.0946 - acc: 0.9632 - val_loss: 0.3769 - val_acc: 0.9069
+# Epoch 24/40
+# 163/163 [==============================] - 245s 2s/step - loss: 0.0974 - acc: 0.9626 - val_loss: 0.3776 - val_acc: 0.8719
+# Epoch 25/40
+# 163/163 [==============================] - 244s 1s/step - loss: 0.0934 - acc: 0.9636 - val_loss: 0.2226 - val_acc: 0.9216
+# Epoch 26/40
+# 163/163 [==============================] - 244s 1s/step - loss: 0.0855 - acc: 0.9653 - val_loss: 0.3248 - val_acc: 0.9050
+# Epoch 27/40
+# 163/163 [==============================] - 244s 1s/step - loss: 0.0928 - acc: 0.9640 - val_loss: 0.2603 - val_acc: 0.9300
+# Epoch 28/40
+# 163/163 [==============================] - 245s 2s/step - loss: 0.0835 - acc: 0.9686 - val_loss: 0.3474 - val_acc: 0.9053
+# Epoch 29/40
+# 163/163 [==============================] - 246s 2s/step - loss: 0.0907 - acc: 0.9630 - val_loss: 0.3066 - val_acc: 0.8957
+# Epoch 30/40
+# 163/163 [==============================] - 247s 2s/step - loss: 0.0903 - acc: 0.9689 - val_loss: 0.3617 - val_acc: 0.8929
+# Epoch 31/40
+# 163/163 [==============================] - 243s 1s/step - loss: 0.0857 - acc: 0.9686 - val_loss: 0.3507 - val_acc: 0.9038
+# Epoch 32/40
+# 163/163 [==============================] - 243s 1s/step - loss: 0.0766 - acc: 0.9720 - val_loss: 0.2888 - val_acc: 0.9056
+# Epoch 33/40
+# 163/163 [==============================] - 244s 1s/step - loss: 0.0906 - acc: 0.9659 - val_loss: 0.2436 - val_acc: 0.9183
+# Epoch 34/40
+# 163/163 [==============================] - 244s 1s/step - loss: 0.0814 - acc: 0.9691 - val_loss: 0.2778 - val_acc: 0.9153
+# Epoch 35/40
+# 163/163 [==============================] - 243s 1s/step - loss: 0.0927 - acc: 0.9655 - val_loss: 0.3873 - val_acc: 0.8943
+# Epoch 36/40
+# 163/163 [==============================] - 244s 1s/step - loss: 0.0829 - acc: 0.9701 - val_loss: 0.3227 - val_acc: 0.9183
+# Epoch 37/40
+# 163/163 [==============================] - 245s 2s/step - loss: 0.0845 - acc: 0.9691 - val_loss: 0.2929 - val_acc: 0.9152
+# Epoch 38/40
+# 163/163 [==============================] - 246s 2s/step - loss: 0.0754 - acc: 0.9732 - val_loss: 0.3624 - val_acc: 0.8937
+# Epoch 39/40
+# 163/163 [==============================] - 247s 2s/step - loss: 0.0743 - acc: 0.9728 - val_loss: 0.3023 - val_acc: 0.9074
+# Epoch 40/40
+# 163/163 [==============================] - 246s 2s/step - loss: 0.0660 - acc: 0.9760 - val_loss: 0.4522 - val_acc: 0.8701
